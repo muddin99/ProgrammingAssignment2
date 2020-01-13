@@ -1,0 +1,57 @@
+## Put comments here that give an overall description of what your
+## functions do
+
+## These functions introduce a special matrix object which caches its inverse.
+## The create such a special matrix 'inv' you execute \code{inv <- makeCacheMatrix(x)}
+## where x is an ordinary matrix. You can then get the value with \code{inv$get()}
+## and change the value with \code{inv$set(y)} where y is an ordinary matrix.
+## You can get the inverse with \code{cacheSolve(inv)}
+
+
+
+## Write a short comment describing this function
+#return A list containing four functions to set and get the value of the
+##matrix and to set and get the inverse of the matrix
+
+makeCacheMatrix <- function(x = matrix()) {
+  
+  inv <- NULL
+  ##define function to set the value of the matrix.It also cleares the 
+  ##old inverse from the cache
+  set <- function(y) {
+    x <<- y #set the value
+    inv <<- NULL #clear the cache
+  }
+  #define function to get the value of the matrix
+  get <- function() x
+  #define function to set the inverse.This is only used by getinverse() when there is no cached inverse
+  setInverse <- function(inverse) inv <<- inverse
+  #define function to get the inverse
+  getInverse <- function() inv
+  #return a list with the above four functions
+  list(set = set, get = get,
+       setInverse = setInverse,
+       getInverse = getInverse)
+}
+
+## Write a short comment describing this function
+##This function computes the inverse of the special matrix returned by
+##makeCacheMatrix above. If the inverse has already been calculated
+## and the matrix has not changed, then the cachesolve retrieves the 
+##inverse from the cache
+
+cacheSolve <- function(x, ...) {
+  inv <- x$getInverse() #This fetches the cached value for the inverse
+  if (!is.null(inv)) { #if the cache was not empty, we can just return it
+    message("getting cached data")
+    return(inv)
+  }
+  data <- x$get() #get the value of matrix
+  inv <- solve(data, ...) #calculate inverse
+  x$setInverse(inv) #cache theresult
+  inv #return the inverse
+  ## Return a matrix that is the inverse of 'x'
+}
+B<-matrix(c(1,2,3,4),2,2)
+B1<-makeCacheMatrix(B)
+cacheSolve(B1)
